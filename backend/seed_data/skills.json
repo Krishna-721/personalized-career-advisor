@@ -1,0 +1,27 @@
+[
+  {
+    "skill_id": 1,
+    "skill_name": "SQL",
+    "description": "Querying and managing databases."
+  },
+  {
+    "skill_id": 2,
+    "skill_name": "Python",
+    "description": "Programming language used for data analysis and development."
+  },
+  {
+    "skill_id": 3,
+    "skill_name": "Data Visualization",
+    "description": "Presenting data with charts and graphs."
+  },
+  {
+    "skill_id": 4,
+    "skill_name": "Figma",
+    "description": "Design tool for UI/UX prototyping."
+  },
+  {
+    "skill_id": 5,
+    "skill_name": "HTML/CSS/JS",
+    "description": "Core technologies for web development."
+  }
+]

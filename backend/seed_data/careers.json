@@ -1,0 +1,22 @@
+[
+{
+    "id": 1,
+    "name":  "Data Analyst",
+    "summary":"Analyze data for insights."
+},
+{
+    "id": 2,
+    "name":  "UI/UX Designer",
+    "summary":"Design user interfaces and experiences."
+},
+{
+    "id": 3,
+    "name":  "Software Engineer",
+    "summary":"Develop software applications."
+},
+{
+    "id": 4,
+    "name":  "Product Manager",
+    "summary":"Oversee product development and strategy."
+}
+]
