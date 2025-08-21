@@ -1,114 +1,143 @@
--- Drop existing tables if they exist (clean slate)
-DROP TABLE IF EXISTS recommendations;
-DROP TABLE IF EXISTS user_skills;
-DROP TABLE IF EXISTS careers;
-DROP TABLE IF EXISTS skills;
-DROP TABLE IF EXISTS users;
-
-
-CREATE DATABASE career_advisor;
-
+create DATABASE career_advisor;
 USE career_advisor;
 
--- ========================
--- USERS TABLE
--- ========================
+-- ===========================
+-- Users Table
+-- ===========================
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    email VARCHAR(100) UNIQUE NOT NULL
 );
 
-INSERT INTO users (name, email, password) VALUES
-('Alice Johnson', 'alice@example.com', 'hashed_pw1'),
-('Bob Smith', 'bob@example.com', 'hashed_pw2'),
-('Charlie Brown', 'charlie@example.com', 'hashed_pw3'),
-('David Wilson', 'david@example.com', 'hashed_pw4'),
-('Paul Lee', 'paulee@example.com', 'hashed_pw5');
-
--- ========================
--- SKILLS TABLE
--- ========================
+-- ===========================
+-- Skills Table
+-- ===========================
 CREATE TABLE skills (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    skill_name VARCHAR(100) NOT NULL UNIQUE
+    name VARCHAR(100) NOT NULL
 );
 
-INSERT INTO skills (skill_name) VALUES
-('Python'),
-('Machine Learning'),
-('Data Analysis'),
-('Web Development'),
-('Cybersecurity'),
-('Cloud Computing'),
-('UI/UX Design'),
-('Digital Marketing'),
-('Project Management'),
-('Database Management');
-
--- ========================
--- CAREERS TABLE
--- ========================
+-- ===========================
+-- Careers Table
+-- ===========================
 CREATE TABLE careers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    career_name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
     description TEXT
 );
 
-INSERT INTO careers (career_name, description) VALUES
-('Data Scientist', 'Works with large data sets to derive insights and build models.'),
-('Software Engineer', 'Designs, builds, and maintains software applications.'),
-('Cybersecurity Analyst', 'Protects systems and networks from cyber threats.'),
-('UI/UX Designer', 'Designs user interfaces and improves user experiences.'),
-('Marketing Specialist', 'Develops and executes marketing strategies.'),
-('Cloud Engineer', 'Manages and deploys applications on cloud infrastructure.');
-
--- ========================
--- USER_SKILLS TABLE (many-to-many relation)
--- ========================
-CREATE TABLE user_skills (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- ===========================
+-- User ↔ Skills
+-- ===========================
+CREATE TABLE users_skills (
     user_id INT,
     skill_id INT,
+    level INT CHECK (level BETWEEN 1 AND 5),
+    PRIMARY KEY (user_id, skill_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
-INSERT INTO user_skills (user_id, skill_id) VALUES
-(1, 1), -- Alice knows Python
-(1, 2), -- Alice knows ML
-(1, 3), -- Alice knows Data Analysis
-(2, 4), -- Bob knows Web Development
-(2, 7), -- Bob knows UI/UX Design
-(3, 5), -- Charlie knows Cybersecurity
-(3, 10); -- Charlie knows DB Management
-
-UPDATE user_skills SET user_id = 4 WHERE user_id = 1; -- David has same skills as Alice
-UPDATE user_skills SET user_id = 5 WHERE user_id = 2; -- Paul has same skills as Bob
-
--- ========================
--- RECOMMENDATIONS TABLE
--- ========================
-CREATE TABLE recommendations (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+-- ===========================
+-- Career ↔ Skills
+-- ===========================
+CREATE TABLE careers_skills (
     career_id INT,
-    reason TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (career_id) REFERENCES careers(id) ON DELETE CASCADE
+    skill_id INT,
+    req_level INT CHECK (req_level BETWEEN 1 AND 5),
+    PRIMARY KEY (career_id, skill_id),
+    FOREIGN KEY (career_id) REFERENCES careers(id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
-INSERT INTO recommendations (user_id, career_id, reason) VALUES
-(1, 1, 'Alice has strong Python, ML, and Data Analysis skills -> Data Scientist.'),
-(2, 2, 'Bob has Web Dev and UI/UX skills -> Software Engineer.'),
-(2, 4, 'Bob has UI/UX Design skills -> UI/UX Designer.'),
-(3, 3, 'Charlie has Cybersecurity knowledge -> Cybersecurity Analyst.'),
-(3, 6, 'Charlie knows Databases and Cloud -> Cloud Engineer.'),
-(4, 1, 'David has Python and Data Analysis skills -> Data Scientist.'),
-(5, 2, 'Paul has Web Development and UI/UX skills -> Software Engineer.'),
-(5, 4, 'Paul has UI/UX Design skills -> UI/UX Designer.');
--- ======================== --
+-- ===========================
+-- Insert Users (10 Students)
+-- ===========================
+INSERT INTO users (name, email) VALUES
+('Aarav Mehta', 'aarav@example.com'),
+('Priya Sharma', 'priya@example.com'),
+('Rohan Kumar', 'rohan@example.com'),
+('Sneha Patel', 'sneha@example.com'),
+('Vikram Singh', 'vikram@example.com'),
+('Ananya Iyer', 'ananya@example.com'),
+('Kunal Verma', 'kunal@example.com'),
+('Meera Nair', 'meera@example.com'),
+('Arjun Gupta', 'arjun@example.com'),
+('Divya Reddy', 'divya@example.com');
 
+-- ===========================
+-- Insert Skills (15)
+-- ===========================
+INSERT INTO skills (name) VALUES
+('Python'),
+('SQL'),
+('Data Analysis'),
+('Machine Learning'),
+('Communication'),
+('Problem Solving'),
+('Cloud Computing'),
+('Web Development'),
+('UI/UX Design'),
+('Digital Marketing'),
+('Cybersecurity'),
+('Networking'),
+('Project Management'),
+('Java'),
+('Statistics');
+
+-- ===========================
+-- Insert Careers (7)
+-- ===========================
+INSERT INTO careers (name, description) VALUES
+('Data Scientist', 'Analyze complex datasets to extract insights and build predictive models.'),
+('Software Engineer', 'Design, develop, and maintain software applications.'),
+('Cloud Engineer', 'Manage and optimize cloud infrastructure and services.'),
+('UI/UX Designer', 'Design intuitive, user-friendly interfaces and experiences.'),
+('Digital Marketer', 'Promote products and services using online marketing strategies.'),
+('Business Analyst', 'Translate business needs into technical requirements using data.'),
+('Cybersecurity Analyst', 'Protect systems and data from security threats and attacks.');
+
+-- ===========================
+-- Insert User Skills (Realistic)
+-- ===========================
+INSERT INTO users_skills (user_id, skill_id, level) VALUES
+-- Aarav (Data Science enthusiast)
+(1, 1, 4), (1, 2, 3), (1, 3, 4), (1, 4, 3), (1, 15, 4),
+-- Priya (Software Engineer)
+(2, 1, 3), (2, 14, 4), (2, 8, 4), (2, 6, 5),
+-- Rohan (Cloud Engineer)
+(3, 7, 5), (3, 2, 3), (3, 12, 4), (3, 5, 3),
+-- Sneha (UI/UX Designer)
+(4, 9, 5), (4, 5, 4), (4, 8, 3), (4, 13, 3),
+-- Vikram (Cybersecurity)
+(5, 11, 5), (5, 12, 4), (5, 2, 3), (5, 6, 4),
+-- Ananya (Digital Marketing)
+(6, 10, 5), (6, 5, 4), (6, 13, 3),
+-- Kunal (Business Analyst)
+(7, 2, 4), (7, 3, 5), (7, 5, 4), (7, 15, 4),
+-- Meera (Well-rounded Student)
+(8, 1, 3), (8, 2, 3), (8, 5, 4), (8, 6, 4), (8, 13, 3),
+-- Arjun (Full-stack Developer)
+(9, 1, 4), (9, 14, 4), (9, 8, 5), (9, 6, 4),
+-- Divya (Cloud + Cybersecurity)
+(10, 7, 4), (10, 11, 4), (10, 2, 3), (10, 12, 3);
+
+-- ===========================
+-- Insert Career Skills (Requirements)
+-- ===========================
+INSERT INTO careers_skills (career_id, skill_id, req_level) VALUES
+-- Data Scientist
+(1, 1, 4), (1, 2, 3), (1, 3, 4), (1, 4, 3), (1, 15, 4),
+-- Software Engineer
+(2, 1, 3), (2, 14, 4), (2, 8, 4), (2, 6, 4),
+-- Cloud Engineer
+(3, 7, 4), (3, 2, 3), (3, 12, 3), (3, 5, 3),
+-- UI/UX Designer
+(4, 9, 5), (4, 5, 4), (4, 8, 3),
+-- Digital Marketer
+(5, 10, 5), (5, 5, 4), (5, 13, 3),
+-- Business Analyst
+(6, 2, 4), (6, 3, 5), (6, 5, 4), (6, 15, 4),
+-- Cybersecurity Analyst
+(7, 11, 5), (7, 12, 4), (7, 2, 3), (7, 6, 4);
