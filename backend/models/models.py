@@ -30,7 +30,7 @@ def get_all_users():
     conn.close()
     return users
 
-def get_users_skills(user_id):
+def get_user_skills(user_id):
     # Fetch skills for a specific user
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -40,12 +40,12 @@ def get_users_skills(user_id):
         JOIN skills s ON us.skill_id = s.id
         WHERE us.user_id = %s;
     ''', (user_id,))
-    users_skills = cursor.fetchall()
+    user_skills = cursor.fetchall()
     cursor.close()
     conn.close()
-    return users_skills
+    return user_skills
 
-def get_careers_skills(career_id):
+def get_career_skills(career_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
@@ -54,7 +54,7 @@ def get_careers_skills(career_id):
         JOIN skills s ON cs.skill_id = s.id
         WHERE cs.career_id = %s;
     ''', (career_id,))
-    careers_skills = cursor.fetchall()
+    career_skills = cursor.fetchall()
     cursor.close()
     conn.close()
-    return careers_skills
+    return career_skills
