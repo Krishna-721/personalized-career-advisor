@@ -1,4 +1,6 @@
-create DATABASE career_advisor;
+-- Drop and recreate database
+DROP DATABASE IF EXISTS career_advisor;
+CREATE DATABASE career_advisor;
 USE career_advisor;
 
 -- ===========================
@@ -30,7 +32,7 @@ CREATE TABLE careers (
 -- ===========================
 -- User ↔ Skills
 -- ===========================
-CREATE TABLE users_skills (
+CREATE TABLE user_skills (
     user_id INT,
     skill_id INT,
     level INT CHECK (level BETWEEN 1 AND 5),
@@ -42,7 +44,7 @@ CREATE TABLE users_skills (
 -- ===========================
 -- Career ↔ Skills
 -- ===========================
-CREATE TABLE careers_skills (
+CREATE TABLE career_skills (
     career_id INT,
     skill_id INT,
     req_level INT CHECK (req_level BETWEEN 1 AND 5),
@@ -101,7 +103,7 @@ INSERT INTO careers (name, description) VALUES
 -- ===========================
 -- Insert User Skills (Realistic)
 -- ===========================
-INSERT INTO users_skills (user_id, skill_id, level) VALUES
+INSERT INTO user_skills (user_id, skill_id, level) VALUES
 -- Aarav (Data Science enthusiast)
 (1, 1, 4), (1, 2, 3), (1, 3, 4), (1, 4, 3), (1, 15, 4),
 -- Priya (Software Engineer)
@@ -126,7 +128,7 @@ INSERT INTO users_skills (user_id, skill_id, level) VALUES
 -- ===========================
 -- Insert Career Skills (Requirements)
 -- ===========================
-INSERT INTO careers_skills (career_id, skill_id, req_level) VALUES
+INSERT INTO career_skills (career_id, skill_id, req_level) VALUES
 -- Data Scientist
 (1, 1, 4), (1, 2, 3), (1, 3, 4), (1, 4, 3), (1, 15, 4),
 -- Software Engineer
