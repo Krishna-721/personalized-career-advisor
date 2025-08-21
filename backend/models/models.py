@@ -36,7 +36,7 @@ def get_user_skills(user_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
         SELECT s.name, us.level
-        FROM users_skills us
+        FROM user_skills us
         JOIN skills s ON us.skill_id = s.id
         WHERE us.user_id = %s;
     ''', (user_id,))
@@ -50,7 +50,7 @@ def get_career_skills(career_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
         SELECT s.name, cs.req_level
-        FROM careers_skills cs
+        FROM career_skills cs
         JOIN skills s ON cs.skill_id = s.id
         WHERE cs.career_id = %s;
     ''', (career_id,))
