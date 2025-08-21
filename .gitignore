@@ -19,3 +19,6 @@ Thumbs.db
 # Databases
 *.sqlite3
 *.db
+
+# Vertex AI key file
+vertex-key.json

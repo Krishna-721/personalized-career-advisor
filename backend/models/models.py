@@ -59,51 +59,54 @@ def get_career_skills(career_id):
     conn.close()
     return career_skills
 
-def match_user_to_career(user_id, career_id):
+def match_user_to_all_careers(user_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
+    # get all careers
+    cursor.execute("SELECT id, name FROM careers")
+    careers = cursor.fetchall()
 
-    # Fetch user skills
-    cursor.execute('''
-        SELECT s.id, s.name, us.level
-        FROM user_skills us
-        JOIN skills s ON us.skill_id = s.id
-        WHERE us.user_id = %s
-    ''', (user_id,))
-    user_skills = cursor.fetchall()
+    results = []
+    for career in careers:
+        career_id = career["id"]
 
-    # Fetch career required skills
-    cursor.execute('''
-        SELECT s.id, s.name, cs.req_level
-        FROM career_skills cs
-        JOIN skills s ON cs.skill_id = s.id
-        WHERE cs.career_id = %s
-    ''', (career_id,))
-    career_skills = cursor.fetchall()
+        # Get required skills for career
+        cursor.execute('''
+            SELECT s.id, s.name, cs.req_level
+            FROM career_skills cs
+            JOIN skills s ON cs.skill_id = s.id
+            WHERE cs.career_id = %s
+        ''', (career_id,))
+        career_skills = cursor.fetchall()
+
+        # Get user skills
+        cursor.execute('''
+            SELECT s.id, s.name, us.level
+            FROM user_skills us
+            JOIN skills s ON us.skill_id = s.id
+            WHERE us.user_id = %s
+        ''', (user_id,))
+        user_skills = cursor.fetchall()
+
+        # Matching logic
+        matched = 0
+        total = len(career_skills)
+        for c in career_skills:
+            user_skill = next((u for u in user_skills if u["id"] == c["id"]), None)  # Finding matching user skill
+            if user_skill and user_skill["level"] >= c["req_level"]:
+                matched += 1
+
+        fit_percent = round((matched / total) * 100, 2) if total > 0 else 0
+
+        results.append({
+            "career_id": career_id,
+            "career_name": career["name"],
+            "fit_percent": fit_percent
+        })
 
     cursor.close()
     conn.close()
 
-    # Match skills
-    matched = []
-    missing = []
-    for c in career_skills:
-        user_skill = next((u for u in user_skills if u["id"] == c["id"]), None)
-        if user_skill and user_skill["level"] >= c["req_level"]:
-            matched.append({
-                "skill": c["name"],
-                "user_level": user_skill["level"],
-                "required": c["req_level"]
-            })
-        else:
-            missing.append({
-                "skill": c["name"],
-                "required": c["req_level"]
-            })
-
-    return {
-        "career_id": career_id,
-        "user_id": user_id,
-        "matched_skills": matched,
-        "missing_skills": missing
-    }
+    # Sort by best match
+    results.sort(key=lambda x: x["fit_percent"], reverse=True)
+    return results
