@@ -14,7 +14,7 @@ credentials = service_account.Credentials.from_service_account_file(KEY_PATH)
 # Initialize Vertex AI with credentials
 vertexai.init(
     project="lithe-cursor-468713-r3",   # <-- your project ID
-    location="us-central1",             # or "asia-south1" if you prefer Mumbai region
+    location="asia-south1",             # or "asia-south1" if you prefer Mumbai region
     credentials=credentials
 )
 
@@ -50,7 +50,7 @@ def generate_career_advice(user_id):
         vertexai.init(project="your-gcp-project-id", location="us-central1")
 
         # Use Gemini Flash
-        model = GenerativeModel("gemini-1.5-flash")
+        model = GenerativeModel("gemini-1.5-pro")
 
 
         response = model.generate_content(prompt)
@@ -68,7 +68,7 @@ def generate_career_advice(user_id):
 
 def generate_test_advice():
     try:
-        vertexai.init(project="lithe-cursor-468713-r3", location="us-central1")
+        vertexai.init(project="lithe-cursor-468713-r3", location="asia-south1")
         model = GenerativeModel("gemini-1.5-pro")
         response = model.generate_content("Say hello! This is a test response from Gemini inside Flask.")
         return {"status": "success", "message": response.text}
