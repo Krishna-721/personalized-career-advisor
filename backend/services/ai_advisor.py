@@ -1,5 +1,6 @@
 from vertexai.preview.generative_models import GenerativeModel
 from backend.models.models import match_user_to_all_careers
+import json
 
 import os
 import vertexai
@@ -20,12 +21,6 @@ vertexai.init(
 
 
 def generate_career_advice(user_id):
-    """
-    Generate personalized career advice for a user
-    using Gemini (Google Cloud Vertex AI).
-    Falls back to a mock response if Vertex AI is not set up.
-    """
-
     # Get structured recommendations (fit % for each career)
     recommendations = match_user_to_all_careers(user_id)
 
@@ -36,35 +31,37 @@ def generate_career_advice(user_id):
 
     # Prompt for Gemini
     prompt = f"""
-    A student has the following career match results:
+   A student has the following career match results:
     {rec_text}
 
-    Based on this, provide a personalized career guidance note.
-    - Suggest which career looks most promising
-    - Highlight missing skills and how to improve them
-    - Keep the tone supportive and professional
+    Write the career advice in STRICT bullet points only, very short and concise.
+    Format EXACTLY like this:
+
+    - Summary: one short line
+    - Fit %: {recommendations[0]['fit_percent']}%
+    - Key Points: 2-3 bullet points, max 6 words each
+    - Alternate Path: one short line
+    - Future Demand: one short line about demand & regions
+    - Tone: motivational, encouraging
+    
+    Do not write long paragraphs. Keep it point-wise, simple, and short.
     """
 
     try:
-        # Initialize Vertex AI
-        vertexai.init(project="your-gcp-project-id", location="us-central1")
-
         # Use Gemini Flash
         model = GenerativeModel("gemini-1.5-pro")
-
-
         response = model.generate_content(prompt)
+
+
         return {
             "user_id": user_id,
             "advice": response.text
         }
 
+
     except Exception as e:
         # Fallback if AI not available
-        return {
-            "user_id": user_id,
-            "advice": "AI not available. Based on your skills, focus on improving your weakest areas to unlock better career options."
-        }
+        return {"user_id": user_id, "advice": f"Error: {str(e)}"}
 
 def generate_test_advice():
     try:
