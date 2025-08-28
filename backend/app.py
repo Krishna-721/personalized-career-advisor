@@ -3,9 +3,11 @@ from backend.routes.profile import profile_bp
 from backend.routes.recommendations import recommendations_bp
 from backend.routes.users import users_bp
 from backend.routes.test_gemini import test_bp
+from flask_cors import CORS
 
 
 app = Flask(__name__) # Initialize the flask app
+CORS(app)
 
 # Registering the blueprints
 app.register_blueprint(profile_bp)
