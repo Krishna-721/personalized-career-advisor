@@ -49,7 +49,7 @@ def generate_career_advice(user_id):
 
     try:
         # Use Gemini Flash
-        model = GenerativeModel("gemini-1.5-pro")
+        model = GenerativeModel("gemini-2.5-pro")
         response = model.generate_content(prompt)
 
 
@@ -66,7 +66,7 @@ def generate_career_advice(user_id):
 def generate_test_advice():
     try:
         vertexai.init(project="lithe-cursor-468713-r3", location="asia-south1")
-        model = GenerativeModel("gemini-1.5-pro")
+        model = GenerativeModel("gemini-2.5-pro")
         response = model.generate_content("Say hello! This is a test response from Gemini inside Flask.")
         return {"status": "success", "message": response.text}
     except Exception as e:
